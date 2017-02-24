@@ -51,4 +51,10 @@ class GoodreadsSession():
             params = {}
         base = "https://www.goodreads.com/"
         resp = self.session.get(base + path, params=params)
-        return xmltodict.parse(resp.content)['GoodreadsResponse']
+        parse = None
+        try:
+            parse = xmltodict.parse(resp.content)['GoodreadsResponse']
+        except KeyError as e:
+            if e.args[0] == 'GoodreadsResponse':
+                raise ValueError('User has a non-public profile.')
+        return parse
